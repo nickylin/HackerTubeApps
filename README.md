@@ -2,7 +2,6 @@
 
 **YouTube, built from videos recommended by Hacker News — now as a native Android app.**
 
-[![Build](https://github.com/nickylin/HackerTubeApps/actions/workflows/build.yml/badge.svg)](https://github.com/nickylin/HackerTubeApps/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Android%208%2B-green.svg)](#install)
 
