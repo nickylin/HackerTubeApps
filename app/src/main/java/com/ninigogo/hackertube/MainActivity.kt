@@ -558,6 +558,7 @@ fun YouTubePlayer(vid: String, modifier: Modifier = Modifier) {
                 settings.useWideViewPort = true
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
                 webChromeClient = chromeClient
+                }
                 android.webkit.CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
                 // YouTube requires a Referer for embeds (error 153 without one):
                 // load a tiny host page with base URL youtube.com so the iframe inherits it.
@@ -565,7 +566,7 @@ fun YouTubePlayer(vid: String, modifier: Modifier = Modifier) {
                     "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>" +
                     "<style>html,body{margin:0;padding:0;background:#000;height:100%}iframe{border:0;width:100%;height:100%}</style>" +
                     "</head><body>" +
-                    "<iframe src='https://www.youtube.com/embed/$vid?autoplay=1&playsinline=1&rel=0&modestbranding=1' " +
+                    "<iframe src='https://www.youtube.com/embed/$vid?autoplay=0&playsinline=1&rel=0&modestbranding=1' " +
                     "allow='autoplay; encrypted-media; picture-in-picture; fullscreen' allowfullscreen></iframe>" +
                     "</body></html>"
                 loadDataWithBaseURL("https://www.youtube.com", html, "text/html", "utf-8", null)
