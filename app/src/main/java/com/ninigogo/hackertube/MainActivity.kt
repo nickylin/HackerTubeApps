@@ -559,13 +559,17 @@ fun YouTubePlayer(vid: String, modifier: Modifier = Modifier) {
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
                 webChromeClient = chromeClient
                 android.webkit.CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
-                // Top-level embed page + explicit Referer header:
-                // a wrapped host page's iframe never paints on this device,
-                // and a bare loadUrl hits YouTube error 153 (missing Referer).
-                loadUrl(
-                    "https://www.youtube.com/embed/$vid?autoplay=1&playsinline=1&rel=0&modestbranding=1",
-                    mapOf("Referer" to "https://www.youtube.com/"),
-                )
+                // Mirror hackertube.org's own working embed: a youtube-nocookie
+                // iframe inside a host page (tap-to-play facade). A top-level
+                // /embed/ navigation gets YouTube errors 153 / 152-4 instead.
+                val html = "<!DOCTYPE html><html><head>" +
+                    "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>" +
+                    "<style>html,body{margin:0;padding:0;background:#000;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style>" +
+                    "</head><body>" +
+                    "<iframe src='https://www.youtube-nocookie.com/embed/$vid?rel=0&playsinline=1' " +
+                    "allow='autoplay; encrypted-media; picture-in-picture; fullscreen' allowfullscreen></iframe>" +
+                    "</body></html>"
+                loadDataWithBaseURL("https://hackertube.org", html, "text/html", "utf-8", null)
             }
         },
     )
@@ -590,13 +594,16 @@ fun VideoDetail(
         related = try { HackerTubeApi.related(video.vid) } catch (e: Exception) { emptyList() }
     }
 
-    LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        // In-app playback: official YouTube IFrame embed, no app switch.
+        // Kept outside the LazyColumn: a WebView inside a scrolling lazy
+        // container does not composite its cross-origin iframe on device.
+        YouTubePlayer(
+            vid = video.vid,
+            modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f),
+        )
+        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
         item {
-            // In-app playback: official YouTube IFrame embed, no app switch.
-            YouTubePlayer(
-                vid = video.vid,
-                modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f),
-            )
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(video.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(6.dp))
@@ -675,6 +682,7 @@ fun VideoDetail(
                 Text("Plays in-app via the official YouTube embedded player. Curation: hackertube.org / Hacker News.",
                     style = MaterialTheme.typography.bodySmall, color = Color(0xFF666666))
             }
+        }
         }
     }
 }
