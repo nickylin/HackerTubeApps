@@ -11,6 +11,14 @@ This project brings HackerTube to **Android phones and tablets first** — the p
 
 > Not affiliated with Andrej Karpathy, Hacker News / Y Combinator, or YouTube / Google. Curation data comes from the public [hackertube.org](https://hackertube.org) API. Videos play in the official YouTube app.
 
+## Screenshots
+
+| Home feed | Why HN recommends it | Playlists |
+|---|---|---|
+| ![Home](screenshots/home.png) | ![Detail](screenshots/detail.png) | ![Playlists](screenshots/playlists.png) |
+
+Real screenshots from a physical device, live data from hackertube.org — no mockups.
+
 ## Why another client?
 
 | | hackertube.org (web) | hackertube.tv (TV client) | **HackerTubeApps (this repo)** |
