@@ -554,6 +554,8 @@ fun YouTubePlayer(vid: String, modifier: Modifier = Modifier) {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.mediaPlaybackRequiresUserGesture = false
+                // Present as plain Chrome: YouTube refuses WebView-UA ("; wv") embeds with error 152-4.
+                settings.userAgentString = "Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
                 webChromeClient = chromeClient
                 android.webkit.CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
