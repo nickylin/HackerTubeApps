@@ -9,7 +9,7 @@ On 31 October 2026, [Andrej Karpathy](https://x.com/karpathy/status/211695713566
 
 This project brings HackerTube to **Android phones and tablets first** — the place most people actually watch video — with Android TV / Google TV support in the same APK.
 
-> Not affiliated with Andrej Karpathy, Hacker News / Y Combinator, or YouTube / Google. Curation data comes from the public [hackertube.org](https://hackertube.org) API. Videos play in the official YouTube app.
+> Not affiliated with Andrej Karpathy, Hacker News / Y Combinator, or YouTube / Google. Curation data comes from the public [hackertube.org](https://hackertube.org) API. Videos play right inside the app (official YouTube embedded player).
 
 ## Screenshots
 
@@ -37,7 +37,7 @@ Real screenshots from a physical device, live data from hackertube.org — no mo
 - **Playlists** — curated paths like *The HN canon* and *Talks every programmer should watch*
 - **Video detail** — summary, **why HN recommends it**, real HN quotes, recommendation count, tags, and up-next videos
 - **Library** — Liked, Watch later and History, stored **only on your device**
-- **Playback** — tap a video and it plays in the official YouTube app (phone) or YouTube for TV; press Back and you are back in HackerTube
+- **Playback** — tap a video and it plays right inside the app via the official YouTube embedded player; press Back and you are back in HackerTube
 - **Not for me** — hide a video from your feed, locally
 - **No account, no ads, no tracking SDKs** — the only network calls are to `hackertube.org` and YouTube thumbnail CDN
 

@@ -11,7 +11,7 @@ Android version is here 📱
 
 I built HackerTube for Android — native app for phone, tablet & Android TV, fully open source (MIT).
 
-Same 6,454 HN-recommended videos, plays in the YouTube app, no account, no tracking.
+Same 6,454 HN-recommended videos, plays right in the app, no account, no tracking.
 
 Source: https://github.com/nickylin/HackerTubeApps
 
@@ -35,7 +35,7 @@ ephraimduncan covered TVs (hackertube.tv); this one covers phone and tablet,
 with a leanback launcher in the same APK so it also runs on Android TV. It
 reads the same public JSON API as the website (/api/feed, /api/search,
 /api/browse, /api/playlists), shows why HN recommends each video with the
-actual quotes, and plays through the official YouTube app. Liked / Watch
+actual quotes, and plays in-app through the official YouTube embedded player. Liked / Watch
 later / History stay on the device — no account, no tracking.
 
 Kotlin + Jetpack Compose, APK on the release page:

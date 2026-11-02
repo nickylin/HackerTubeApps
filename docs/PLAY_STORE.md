@@ -21,13 +21,13 @@ Android TV:
 • Every video shows WHY Hacker News recommends it, with real quotes
 • Search and browse 150 topics
 • Liked, Watch Later and History — stored only on your device
-• No account. No ads. No tracking. Videos play in the YouTube app.
+• No account. No ads. No tracking. Videos play right in the app.
 
 Open source (MIT): https://github.com/nickylin/HackerTubeApps
 Not affiliated with Hacker News, Y Combinator, YouTube or Google.
 
 **Category:** Entertainment (secondary: Education)
-**Content rating:** Everyone / PEGI 3 (videos play in YouTube app)
+**Content rating:** Everyone / PEGI 3 (videos play in-app via the official YouTube embedded player)
 **Data safety:** No data collected, no data shared. App contacts hackertube.org
 for the catalogue and YouTube CDN for thumbnails only.
 **Package:** com.ninigogo.hackertube
