@@ -554,11 +554,8 @@ fun YouTubePlayer(vid: String, modifier: Modifier = Modifier) {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.mediaPlaybackRequiresUserGesture = false
-                settings.loadWithOverviewMode = true
-                settings.useWideViewPort = true
                 settings.cacheMode = WebSettings.LOAD_DEFAULT
                 webChromeClient = chromeClient
-                }
                 android.webkit.CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
                 // Top-level embed page + explicit Referer header:
                 // a wrapped host page's iframe never paints on this device,
