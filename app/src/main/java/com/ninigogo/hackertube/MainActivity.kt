@@ -564,10 +564,13 @@ fun YouTubePlayer(vid: String, modifier: Modifier = Modifier) {
                 // /embed/ navigation gets YouTube errors 153 / 152-4 instead.
                 val html = "<!DOCTYPE html><html><head>" +
                     "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>" +
-                    "<style>html,body{margin:0;padding:0;background:#000;height:100%}iframe{border:0;width:100%;height:100%;display:block}</style>" +
+                    "<style>html,body{margin:0;padding:0;background:#000;height:100%}#t{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}" +
+                    "#b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:68px;height:48px;border:0;border-radius:12px;background:rgba(255,0,0,.92);color:#fff;font-size:20px}" +
+                    "iframe{border:0;width:100%;height:100%;display:block}</style>" +
                     "</head><body>" +
-                    "<iframe src='https://www.youtube-nocookie.com/embed/$vid?rel=0&playsinline=1' " +
-                    "allow='autoplay; encrypted-media; picture-in-picture; fullscreen' allowfullscreen></iframe>" +
+                    "<img id='t' src='https://i.ytimg.com/vi/$vid/hqdefault.jpg'>" +
+                    "<button id='b' onclick='go()'>&#9654;</button>" +
+                    "<script>function go(){document.body.innerHTML='<iframe src=\"https://www.youtube-nocookie.com/embed/$vid?autoplay=1&rel=0&playsinline=1\" allow=\"autoplay; encrypted-media; picture-in-picture; fullscreen\" allowfullscreen></iframe>'}</script>" +
                     "</body></html>"
                 // Base64 encoding is required: raw "%" in the CSS silently
                 // breaks loadDataWithBaseURL rendering (all-black player).
