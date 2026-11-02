@@ -569,7 +569,12 @@ fun YouTubePlayer(vid: String, modifier: Modifier = Modifier) {
                     "<iframe src='https://www.youtube-nocookie.com/embed/$vid?rel=0&playsinline=1' " +
                     "allow='autoplay; encrypted-media; picture-in-picture; fullscreen' allowfullscreen></iframe>" +
                     "</body></html>"
-                loadDataWithBaseURL("https://hackertube.org", html, "text/html", "utf-8", null)
+                // Base64 encoding is required: raw "%" in the CSS silently
+                // breaks loadDataWithBaseURL rendering (all-black player).
+                val encodedHtml = android.util.Base64.encodeToString(
+                    html.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP,
+                )
+                loadDataWithBaseURL("https://hackertube.org", encodedHtml, "text/html", "base64", null)
             }
         },
     )
