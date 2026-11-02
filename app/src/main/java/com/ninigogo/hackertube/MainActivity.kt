@@ -69,6 +69,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import android.view.View
+import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.widget.FrameLayout
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -491,6 +499,84 @@ fun SearchScreen(store: LibraryStore, onOpen: (Video) -> Unit) {
     }
 }
 
+
+@Composable
+fun YouTubePlayer(vid: String, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val activity = context as? ComponentActivity
+    var fullscreenView by remember { mutableStateOf<View?>(null) }
+    var webView by remember { mutableStateOf<WebView?>(null) }
+
+    fun exitFullscreen() {
+        val decor = activity?.window?.decorView as? ViewGroup
+        fullscreenView?.let { decor?.removeView(it) }
+        fullscreenView = null
+        webView?.visibility = View.VISIBLE
+    }
+
+    val chromeClient = remember {
+        object : WebChromeClient() {
+            override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
+                val decor = activity?.window?.decorView as? ViewGroup ?: return
+                fullscreenView = view
+                webView?.visibility = View.INVISIBLE
+                decor.addView(
+                    view,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    )
+                )
+            }
+
+            override fun onHideCustomView() = exitFullscreen()
+        }
+    }
+
+    DisposableEffect(vid) {
+        onDispose {
+            exitFullscreen()
+            webView?.apply {
+                stopLoading()
+                loadUrl("about:blank")
+                destroy()
+            }
+            webView = null
+        }
+    }
+
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            WebView(ctx).apply {
+                webView = this
+                setBackgroundColor(android.graphics.Color.BLACK)
+                settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
+                settings.mediaPlaybackRequiresUserGesture = false
+                settings.loadWithOverviewMode = true
+                settings.useWideViewPort = true
+                settings.cacheMode = WebSettings.LOAD_DEFAULT
+                webChromeClient = chromeClient
+                val html = """
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+                      <style>html,body{margin:0;padding:0;background:#000;height:100%}iframe{border:0;width:100%;height:100%}</style>
+                    </head>
+                    <body>
+                      <iframe src="https://www.youtube-nocookie.com/embed/$vid?autoplay=1&playsinline=1&rel=0&modestbranding=1"
+                        allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+                    </body>
+                    </html>
+                """.trimIndent()
+                loadDataWithBaseURL("https://www.youtube.com", html, "text/html", "utf-8", null)
+            }
+        },
+    )
+}
+
 @Composable
 fun VideoDetail(
     video: Video,
@@ -505,23 +591,18 @@ fun VideoDetail(
     var related by remember { mutableStateOf<List<Video>>(emptyList()) }
 
     LaunchedEffect(video.vid) {
+        store.addHistory(video)
+        onBump()
         related = try { HackerTubeApi.related(video.vid) } catch (e: Exception) { emptyList() }
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 24.dp)) {
         item {
-            Box(modifier = Modifier.fillMaxWidth().clickable { onPlay(video) }) {
-                AsyncImage(
-                    model = video.thumbnail, contentDescription = video.title,
-                    modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f),
-                    contentScale = ContentScale.Crop,
-                )
-                Icon(
-                    Icons.Filled.PlayArrow, contentDescription = "Play in YouTube",
-                    modifier = Modifier.align(Alignment.Center).size(72.dp),
-                    tint = Color.White,
-                )
-            }
+            // In-app playback: official YouTube IFrame embed, no app switch.
+            YouTubePlayer(
+                vid = video.vid,
+                modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f),
+            )
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(video.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(6.dp))
@@ -534,9 +615,6 @@ fun VideoDetail(
                 }
                 Spacer(Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = { onPlay(video) }) {
-                        Icon(Icons.Filled.PlayArrow, null); Spacer(Modifier.width(4.dp)); Text("Play")
-                    }
                     OutlinedButton(onClick = { store.toggleLiked(video); onBump() }) {
                         Icon(Icons.Filled.ThumbUp, null); Spacer(Modifier.width(4.dp))
                         Text(if (liked) "Liked" else "Like")
@@ -546,7 +624,13 @@ fun VideoDetail(
                         Text(if (later) "Saved" else "Watch later")
                     }
                 }
-                OutlinedButton(onClick = { store.hide(video.vid); onBump() }) { Text("Not for me") }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(onClick = { onPlay(video) }) {
+                        Icon(Icons.Filled.PlayArrow, null); Spacer(Modifier.width(4.dp))
+                        Text("Open in YouTube app")
+                    }
+                    OutlinedButton(onClick = { store.hide(video.vid); onBump() }) { Text("Not for me") }
+                }
 
                 if (video.whyHn.isNotBlank()) {
                     Spacer(Modifier.height(16.dp))
@@ -594,7 +678,7 @@ fun VideoDetail(
             Row(modifier = Modifier.padding(16.dp)) {
                 Icon(Icons.Filled.History, null, tint = Color(0xFF666666), modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(6.dp))
-                Text("Plays in the YouTube app. Curation: hackertube.org / Hacker News.",
+                Text("Plays in-app via the official YouTube embedded player. Curation: hackertube.org / Hacker News.",
                     style = MaterialTheme.typography.bodySmall, color = Color(0xFF666666))
             }
         }
